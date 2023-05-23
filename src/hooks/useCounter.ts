@@ -1,19 +1,21 @@
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 
-const targetTime = '17:30'
+interface CounterProps {
+  target: string
+}
 
-export default function useCounter() {
-  const [count, setCount] = useState('00:00:00')
+export default function useCounter({ target }: CounterProps) {
+  const [count, setCount] = useState(target)
   const [past, setPast] = useState(false)
+
   useEffect(() => {
-    const tarTime = moment(targetTime, 'HH:mm')
+    console.log('useEffect: ', target)
+    const tarTime = moment(target, 'HH:mm')
     const intervalId = setInterval(() => {
       const diff = tarTime.diff(moment(), 'milliseconds')
-      if (diff <= 0) {
-        setPast(true)
-        return
-      }
+      setPast(diff <= 0)
+      if (diff <= 0) return
       const duration = moment.duration(diff)
       const hours = duration.hours().toString().padStart(2, '0')
       const minutes = duration.minutes().toString().padStart(2, '0')
@@ -22,7 +24,7 @@ export default function useCounter() {
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [targetTime])
+  }, [target])
 
   return { count, past }
 }
